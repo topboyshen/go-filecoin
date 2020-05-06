@@ -131,9 +131,21 @@ func (s *VMStorage) Flush() error {
 	for _, nd := range s.writeBuffer {
 		blks = append(blks, nd)
 	}
-	// write objects to store
-	if err := s.blockstore.PutMany(blks); err != nil {
-		return err
+
+	maxBatchSize := 1024
+
+	// write at most maxBatchSize objects to store at a time
+	for i := 0; i < len(blks)/maxBatchSize+1; i++ {
+		index := i * maxBatchSize
+		if index+maxBatchSize < len(blks) {
+			if err := s.blockstore.PutMany(blks[index : index*maxBatchSize]); err != nil {
+				return err
+			}
+		} else if index != len(blks) {
+			if err := s.blockstore.PutMany(blks[index:len(blks)]); err != nil {
+				return err
+			}
+		}
 	}
 
 	// Dragons: check if the blockstore has a flush and flush it too
