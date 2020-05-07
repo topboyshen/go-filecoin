@@ -138,7 +138,7 @@ func (s *VMStorage) Flush() error {
 	for i := 0; i < len(blks)/maxBatchSize+1; i++ {
 		index := i * maxBatchSize
 		if index+maxBatchSize < len(blks) {
-			if err := s.blockstore.PutMany(blks[index : index*maxBatchSize]); err != nil {
+			if err := s.blockstore.PutMany(blks[index : index+maxBatchSize]); err != nil {
 				return err
 			}
 		} else if index != len(blks) {
