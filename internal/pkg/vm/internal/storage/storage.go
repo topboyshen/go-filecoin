@@ -142,7 +142,7 @@ func (s *VMStorage) Flush() error {
 				return err
 			}
 		} else if index != len(blks) {
-			if err := s.blockstore.PutMany(blks[index:len(blks)]); err != nil {
+			if err := s.blockstore.PutMany(blks[index:]); err != nil {
 				return err
 			}
 		}
